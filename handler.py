@@ -5,13 +5,29 @@ import pandas as pd
 from io import BytesIO
 import os
 
+
+def get_latest_obj(input_bucket):
+    """
+    This function gets the last modified file from an S3 bucket.
+    :param input_bucket: S3 bucket
+    :return: key of the last modified file from the S3 bucket
+    """
+    get_last_modified = lambda obj: int(obj.last_modified.strftime('%s'))
+    objs = [obj for obj in input_bucket.objects.all()]
+
+    objs = [obj for obj in sorted(objs, key=get_last_modified)]
+    return objs[-1].key
+
+
 s3 = boto3.resource(
     's3',
     aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
     aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"])
 
+bucket = s3.Bucket('ml-models-niels')
+
 with BytesIO() as file:
-    s3.Bucket("ml-models-niels").download_fileobj("model_1.5.joblib", file)
+    s3.Bucket("ml-models-niels").download_fileobj(get_latest_obj(bucket), file)
     file.seek(0)
     model = joblib.load(file)
 
