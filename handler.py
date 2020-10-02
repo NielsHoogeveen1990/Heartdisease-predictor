@@ -13,9 +13,7 @@ def get_latest_obj(input_bucket):
     :return: key of the last modified file from the S3 bucket
     """
     get_last_modified = lambda obj: int(obj.last_modified.strftime('%s'))
-    objs = [obj for obj in input_bucket.objects.all()]
-
-    objs = [obj for obj in sorted(objs, key=get_last_modified)]
+    objs = [obj for obj in sorted(list(input_bucket.objects.all()), key=get_last_modified)]
     return objs[-1].key
 
 
