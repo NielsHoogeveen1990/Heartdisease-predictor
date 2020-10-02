@@ -3,3 +3,4 @@ pandas
 sklearn
 click
 click_pathlib
+boto3
