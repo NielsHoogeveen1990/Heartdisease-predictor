@@ -45,7 +45,7 @@ def write_to_S3(datapath, model_version, bucket_name, aws_access_key, aws_secret
     y_hat = fitted_model.predict(X_test)
     evaluate(y_hat, y_test)
 
-    key = f"model_{model_version}.pkl"
+    key = f'model_{model_version}.joblib'
 
     with tempfile.TemporaryFile() as file:
         joblib.dump(fitted_model, file)

@@ -8,3 +8,5 @@ on create date
 5. Create a AWS Lambda function based on S3 event trigger
 6. Write batch prediction results to S3 bucket
 
+Extra: train model based on data in S3 bucket
+
