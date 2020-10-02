@@ -41,7 +41,7 @@ def run(datapath, model_version):
         joblib.dump(fitted_model, file)
 
 
-def write_to_S3(datapath, model_version, aws_access_key, aws_secret_access_key):
+def write_to_S3(datapath, model_version, bucket_name, aws_access_key, aws_secret_access_key):
     df = get_df(datapath)
 
     X_train, X_test, y_train, y_test = split_data(df)
@@ -55,7 +55,6 @@ def write_to_S3(datapath, model_version, aws_access_key, aws_secret_access_key):
     with open(f'trained_models/model_{model_version}.joblib', 'wb') as file:
         joblib.dump(fitted_model, file)
 
-    bucket_name = "ml-models-niels"
     key = f"model_{model_version}.pkl"
 
     s3_resource = boto3.resource('s3',
