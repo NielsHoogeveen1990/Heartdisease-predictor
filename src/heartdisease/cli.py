@@ -24,8 +24,6 @@ def train_model(data_path, model_version):
 @click.option("--data-path", type=click_pathlib.Path(exists=True))
 @click.option("--model-version", type=float)
 @click.option("--bucket-name", type=str)
-@click.option("--access", type=str)
-@click.option("--secret", type=str)
-def write_model_aws(data_path, model_version, bucket_name, access, secret):
-    models_utils.write_to_S3(data_path, model_version, bucket_name, access, secret)
+def write_model_aws(data_path, model_version, bucket_name):
+    models_utils.write_to_S3(data_path, model_version, bucket_name)
     logger.info('Finished with training the model and writing to S3.')
