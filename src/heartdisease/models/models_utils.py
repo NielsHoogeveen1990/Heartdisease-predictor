@@ -50,9 +50,10 @@ def write_to_S3(datapath, model_version, bucket_name, aws_access_key, aws_secret
     with tempfile.TemporaryFile() as file:
         joblib.dump(fitted_model, file)
         file.seek(0)
-        s3_resource = boto3.resource('s3',
-                                     aws_access_key_id=aws_access_key,
-                                     aws_secret_access_key=aws_secret_access_key)
+        # s3_resource = boto3.resource('s3',
+        #                              aws_access_key_id=aws_access_key,
+        #                              aws_secret_access_key=aws_secret_access_key)
+        s3_resource = boto3.resource('s3')
         s3_resource.Object(bucket_name, key).put(Body=file.read())
 
 
