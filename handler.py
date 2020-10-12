@@ -2,8 +2,8 @@ import json
 import boto3
 import joblib
 import pandas as pd
+import numpy as np
 from io import BytesIO
-import os
 
 
 def get_latest_obj(input_bucket):
@@ -16,14 +16,13 @@ def get_latest_obj(input_bucket):
     objs = [obj for obj in sorted(list(input_bucket.objects.all()), key=get_last_modified)]
     return objs[-1].key
 
+# Connect to S3 bucket with the higher-level object-oriented service access
+s3 = boto3.resource('s3')
 
-s3 = boto3.resource(
-    's3',
-    aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
-    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"])
-
+# Load the specific bucket where the ML model is saved
 bucket = s3.Bucket('ml-models-niels')
 
+# Download an write to an in-memory BytesIO object, which acts like a file but doesn't actually touch a disk.
 with BytesIO() as file:
     s3.Bucket("ml-models-niels").download_fileobj(get_latest_obj(bucket), file)
     file.seek(0)
@@ -47,7 +46,7 @@ def predict(event, context):
         'restecg': int(params['restecg']),
         'thalach': int(params['thalach']),
         'exang': int(params['exang']),
-        'oldpeak': int(params['oldpeak']),
+        'oldpeak': int(np.log1p(params['oldpeak'])),
         'slope': int(params['slope']),
         'ca': int(params['ca']),
         'thal': int(params['thal'])
