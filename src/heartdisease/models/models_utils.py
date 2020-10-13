@@ -38,6 +38,16 @@ def run(datapath, model_version):
         joblib.dump(fitted_model, file)
 
 
+def retrain(datapath, model_version):
+    df = get_df(datapath)
+    X = df.drop(columns='target')
+    y = df['target']
+    fitted_model = fit(RF, X, y)
+
+    with open(f'trained_models/model_{model_version}.joblib', 'wb') as file:
+        joblib.dump(fitted_model, file)
+
+
 def write_to_S3(datapath, model_version, bucket_name):
     df = get_df(datapath)
     X_train, X_test, y_train, y_test = split_data(df)

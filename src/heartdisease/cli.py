@@ -22,6 +22,14 @@ def train_model(data_path, model_version):
 
 @main.command()
 @click.option("--data-path", type=click_pathlib.Path(exists=True))
+@click.option("--model-version", type=int)
+def retrain_model(data_path, model_version):
+    models_utils.retrain(data_path, model_version)
+    logger.info('Finished with retraining the final model.')
+
+
+@main.command()
+@click.option("--data-path", type=click_pathlib.Path(exists=True))
 @click.option("--model-version", type=float)
 @click.option("--bucket-name", type=str)
 def write_model_aws(data_path, model_version, bucket_name):
