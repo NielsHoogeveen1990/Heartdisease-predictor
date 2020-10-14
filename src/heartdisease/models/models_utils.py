@@ -4,6 +4,7 @@ import joblib
 import tempfile
 import boto3
 
+
 from heartdisease.models.ML_models import RF
 from heartdisease.preprocessing import get_df
 
@@ -34,28 +35,29 @@ def run(datapath, model_version):
     y_hat = fitted_model.predict(X_test)
     evaluate(y_hat, y_test)
 
-    with open(f'trained_models/model_{model_version}.joblib', 'wb') as file:
-        joblib.dump(fitted_model, file)
-
 
 def retrain(datapath, model_version):
+    """Train the model on the entire dataset and save it with joblib to a local directory."""
     df = get_df(datapath)
     X = df.drop(columns='target')
     y = df['target']
     fitted_model = fit(RF, X, y)
 
-    with open(f'trained_models/model_{model_version}.joblib', 'wb') as file:
+    with open(f'trained_models/model_{model_version}.pkl', 'wb') as file:
         joblib.dump(fitted_model, file)
 
 
 def write_to_S3(datapath, model_version, bucket_name):
+    """
+    Train the model on the entire dataset and save it in memory to
+    subsequently write it so an S3 bucket on AWS.
+    """
     df = get_df(datapath)
-    X_train, X_test, y_train, y_test = split_data(df)
-    fitted_model = fit(RF, X_train, y_train)
-    y_hat = fitted_model.predict(X_test)
-    evaluate(y_hat, y_test)
+    X = df.drop(columns='target')
+    y = df['target']
+    fitted_model = fit(RF, X, y)
 
-    key = f'model_{model_version}.joblib'
+    key = f'model_{model_version}.pkl'
 
     with tempfile.TemporaryFile() as file:
         joblib.dump(fitted_model, file)
@@ -63,6 +65,7 @@ def write_to_S3(datapath, model_version, bucket_name):
 
         s3_resource = boto3.resource('s3')
         s3_resource.Object(bucket_name, key).put(Body=file.read())
+
 
 
 
