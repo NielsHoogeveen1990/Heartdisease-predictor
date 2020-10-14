@@ -29,9 +29,10 @@ def retrain_model(data_path, model_version):
 
 
 @main.command()
-@click.option("--data-path", type=click_pathlib.Path(exists=True))
+@click.option("--data-bucket", type=str)
+@click.option("--data-key", type=str)
 @click.option("--model-version", type=float)
 @click.option("--bucket-name", type=str)
-def write_model_aws(data_path, model_version, bucket_name):
-    models_utils.write_to_S3(data_path, model_version, bucket_name)
+def write_model_aws(data_bucket, data_key, model_version, bucket_name):
+    models_utils.write_to_S3(data_bucket, data_key, model_version, bucket_name)
     logger.info('Finished with training the model and writing to S3.')

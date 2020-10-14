@@ -6,7 +6,7 @@ import boto3
 
 
 from heartdisease.models.ML_models import RF
-from heartdisease.preprocessing import get_df
+from heartdisease.preprocessing import get_df, get_S3_df
 
 
 def split_data(df):
@@ -47,12 +47,12 @@ def retrain(datapath, model_version):
         joblib.dump(fitted_model, file)
 
 
-def write_to_S3(datapath, model_version, bucket_name):
+def write_to_S3(data_bucket, data_key, model_version, bucket_name):
     """
-    Train the model on the entire dataset and save it in memory to
+    Train the model on the entire dataset and sgit bave it in memory to
     subsequently write it so an S3 bucket on AWS.
     """
-    df = get_df(datapath)
+    df = get_S3_df(data_bucket, data_key)
     X = df.drop(columns='target')
     y = df['target']
     fitted_model = fit(RF, X, y)
