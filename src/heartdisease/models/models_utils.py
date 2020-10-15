@@ -43,13 +43,13 @@ def retrain(datapath, model_version):
     y = df['target']
     fitted_model = fit(RF, X, y)
 
-    with open(f'trained_models/model_{model_version}.pkl', 'wb') as file:
+    with open(f'trained_models/model_{model_version}.joblib', 'wb') as file:
         joblib.dump(fitted_model, file)
 
 
 def write_to_S3(data_bucket, data_key, model_version, bucket_name):
     """
-    Train the model on the entire dataset and sgit bave it in memory to
+    Train the model on the entire dataset and save it in memory to
     subsequently write it so an S3 bucket on AWS.
     """
     df = get_S3_df(data_bucket, data_key)
@@ -57,7 +57,7 @@ def write_to_S3(data_bucket, data_key, model_version, bucket_name):
     y = df['target']
     fitted_model = fit(RF, X, y)
 
-    key = f'model_{model_version}.pkl'
+    key = f'model_{model_version}.joblib'
 
     with tempfile.TemporaryFile() as file:
         joblib.dump(fitted_model, file)
