@@ -1,8 +1,8 @@
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import train_test_split
-import joblib
 import tempfile
 import boto3
+import dill
 
 
 from heartdisease.models.ML_models import RF
@@ -43,8 +43,8 @@ def retrain(datapath, model_version):
     y = df['target']
     fitted_model = fit(RF, X, y)
 
-    with open(f'trained_models/model_{model_version}.joblib', 'wb') as file:
-        joblib.dump(fitted_model, file)
+    with open(f'trained_models/model_{model_version}.pkl', 'wb') as file:
+        dill.dump(fitted_model, file)
 
 
 def write_to_S3(data_bucket, data_key, model_version, bucket_name):
@@ -57,10 +57,10 @@ def write_to_S3(data_bucket, data_key, model_version, bucket_name):
     y = df['target']
     fitted_model = fit(RF, X, y)
 
-    key = f'model_{model_version}.joblib'
+    key = f'model_{model_version}.pkl'
 
     with tempfile.TemporaryFile() as file:
-        joblib.dump(fitted_model, file)
+        dill.dump(fitted_model, file)
         file.seek(0)
 
         s3_resource = boto3.resource('s3')
